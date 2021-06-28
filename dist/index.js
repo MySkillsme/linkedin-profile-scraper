@@ -594,7 +594,8 @@ class LinkedInProfileScraper {
                                         StartDate: rolestartDate,
                                         EndDate: roleendDate,
                                         location: rolelocation,
-                                        description: roledescription
+                                        description: roledescription,
+                                        isPresent: roleendDateIsPresent
                                     })
                                 })
                                 jobSectionsFading.forEach((role) => {
@@ -658,7 +659,8 @@ class LinkedInProfileScraper {
                                         StartDate: rolestartDate,
                                         EndDate: roleendDate,
                                         location: rolelocation,
-                                        description: roledescription
+                                        description: roledescription,
+                                        isPresent: roleendDateIsPresent
                                     })
                                 })
 
@@ -678,7 +680,7 @@ class LinkedInProfileScraper {
                                             location: k.location,
                                             startDate: k.StartDate,
                                             endDate: k.EndDate,
-                                            endDateIsPresent,
+                                            endDateIsPresent: k.isPresent,
                                             description: k.description,
                                             // roles: jobRoles
                                         });
