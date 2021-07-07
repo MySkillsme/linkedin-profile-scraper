@@ -31,7 +31,7 @@ class LinkedInProfileScraper {
         this.options = {
             sessionCookieValue: '',
             keepAlive: false,
-            timeout: 60000,
+            timeout: 10000,
             userAgent:
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
             headless: true,
@@ -268,14 +268,14 @@ class LinkedInProfileScraper {
                 const url = page.url();
                 const isLoggedIn = !url.endsWith('/login');
                 yield page.close();
-                if (isLoggedIn) {
-                    utils_1.statusLog(logSection, 'All good. We are still logged in.');
-                } else {
-                    const errorMessage =
-                        'Bad news, we are not logged in! Your session seems to be expired. Use your browser to login again with your LinkedIn credentials and extract the "li_at" cookie value for the "sessionCookieValue" option.';
-                    utils_1.statusLog(logSection, errorMessage);
-                    throw new errors_1.SessionExpired(errorMessage);
-                }
+                // if (isLoggedIn) {
+                //     utils_1.statusLog(logSection, 'All good. We are still logged in.');
+                // } else {
+                //     const errorMessage =
+                //         'Bad news, we are not logged in! Your session seems to be expired. Use your browser to login again with your LinkedIn credentials and extract the "li_at" cookie value for the "sessionCookieValue" option.';
+                //     utils_1.statusLog(logSection, errorMessage);
+                //     throw new errors_1.SessionExpired(errorMessage);
+                // }
             });
         this.run = (profileUrl) =>
             tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -318,11 +318,14 @@ class LinkedInProfileScraper {
                         '#experience-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle', // Experience
                         '.pv-profile-section.education-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle', // Education
                         '.pv-skill-categories-section [data-control-name="skill_details"]', // Skills
+
+                        '.show-more-less-text__button.show-more-less-text__button--less'
                     ];
                     const seeMoreButtonsSelectors = [
                         '.pv-entity__description .lt-line-clamp__line.lt-line-clamp__line--last .inline-show-more-text__button.link[href="#"]',
                         '.inline-show-more-text__button.link[href="#"]:not(.lt-line-clamp__ellipsis--dummy)',
-                        'div.pv-profile-section__position-group-pager.pv-profile-section__actions-inline.ember-view button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle.artdeco-button.artdeco-button--tertiary.artdeco-button--muted'
+                        'div.pv-profile-section__position-group-pager.pv-profile-section__actions-inline.ember-view button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle.artdeco-button.artdeco-button--tertiary.artdeco-button--muted',
+                        // '.show-more-less-text__button.show-more-less-text__button--less'
                     ];
                     utils_1.statusLog(
                         logSection,
@@ -376,31 +379,48 @@ class LinkedInProfileScraper {
                     }
                     utils_1.statusLog(logSection, 'Parsing profile data...', scraperSessionId);
                     const rawUserProfileData = yield page.evaluate(() => {
-                        const profileSection = document.querySelector('.pv-top-card');
+                        // const profileSection = document.querySelector('.pv-top-card');
+                        const profileSection = document.querySelector('.top-card-layout');
                         const url = window.location.href;
+                        // const fullNameElement =
+                        //     profileSection === null || profileSection === void 0
+                        //         ? void 0
+                        //         : profileSection.querySelector(
+                        //             'h1.text-heading-xlarge.inline.t-24.v-align-middle.break-words:first-child',
+                        //         );
                         const fullNameElement =
                             profileSection === null || profileSection === void 0
                                 ? void 0
                                 : profileSection.querySelector(
-                                    'h1.text-heading-xlarge.inline.t-24.v-align-middle.break-words:first-child',
+                                    'h1.top-card-layout__title',
                                 );
                         const fullName =
                             (fullNameElement === null || fullNameElement === void 0
                                 ? void 0
                                 : fullNameElement.textContent) || null;
+                        // const titleElement =
+                        //     profileSection === null || profileSection === void 0
+                        //         ? void 0
+                        //         : profileSection.querySelector('div.text-body-medium.break-words');
                         const titleElement =
                             profileSection === null || profileSection === void 0
                                 ? void 0
-                                : profileSection.querySelector('div.text-body-medium.break-words');
+                                : profileSection.querySelector('h2.top-card-layout__headline');
                         const title =
                             (titleElement === null || titleElement === void 0
                                 ? void 0
                                 : titleElement.textContent) || null;
+                        // const locationElement =
+                        //     profileSection === null || profileSection === void 0
+                        //         ? void 0
+                        //         : profileSection.querySelector(
+                        //             'span.text-body-small.inline.t-black--light.break-words:first-child',
+                        //         );
                         const locationElement =
                             profileSection === null || profileSection === void 0
                                 ? void 0
                                 : profileSection.querySelector(
-                                    'span.text-body-small.inline.t-black--light.break-words:first-child',
+                                    'span.top-card__subline-item',
                                 );
                         const location =
                             (locationElement === null || locationElement === void 0
@@ -417,8 +437,11 @@ class LinkedInProfileScraper {
                             (photoElement === null || photoElement === void 0
                                 ? void 0
                                 : photoElement.getAttribute('src')) || null;
+                        // const descriptionElement = document.querySelector(
+                        //     '.pv-about__summary-text .lt-line-clamp__raw-line',
+                        // );
                         const descriptionElement = document.querySelector(
-                            '.pv-about__summary-text .lt-line-clamp__raw-line',
+                            'div.core-section-container__content',
                         );
                         const description =
                             (descriptionElement === null || descriptionElement === void 0
@@ -447,9 +470,13 @@ class LinkedInProfileScraper {
                         scraperSessionId,
                     );
                     utils_1.statusLog(logSection, `Parsing experiences data...`, scraperSessionId);
+
                     const rawExperiencesData = yield page.$$eval(
-                        '#experience-section ul > .ember-view',
+                        // '#experience-section ul > .ember-view',
+                        'section.experience ul > .experience-item',
                         (nodes) => {
+
+                            // utils_1.statusLog(logSection, `looping through experience`, nodes);
                             let data = [];
                             for (const node of nodes) {
                                 const titleElement = node.querySelector('h3');
@@ -465,67 +492,75 @@ class LinkedInProfileScraper {
                                         employmentTypeElement === void 0
                                         ? void 0
                                         : employmentTypeElement.textContent) || null;
+                                // const companyElement = node.querySelector(
+                                //     '.pv-entity__secondary-title',
+                                // );
                                 const companyElement = node.querySelector(
-                                    '.pv-entity__secondary-title',
+                                    'h4.result-card__subtitle',
                                 );
-                                const companyElementClean =
-                                    companyElement &&
-                                        (companyElement === null || companyElement === void 0
-                                            ? void 0
-                                            : companyElement.querySelector('span'))
-                                        ? (companyElement === null || companyElement === void 0
-                                            ? void 0
-                                            : companyElement.removeChild(
-                                                companyElement.querySelector('span'),
-                                            )) && companyElement
-                                        : companyElement || null;
+
                                 const company =
-                                    (companyElementClean === null || companyElementClean === void 0
+                                    (companyElement === null || companyElement === void 0
                                         ? void 0
-                                        : companyElementClean.textContent) || null;
+                                        : companyElement.textContent) || null;
                                 const descriptionElement =
                                     node.querySelector('.pv-entity__description');
                                 const description =
                                     (descriptionElement === null || descriptionElement === void 0
                                         ? void 0
                                         : descriptionElement.textContent) || null;
+
                                 const dateRangeElement = node.querySelector(
-                                    '.pv-entity__date-range span:nth-child(2)',
+                                    'span.date-range',
                                 );
                                 const dateRangeText =
                                     (dateRangeElement === null || dateRangeElement === void 0
                                         ? void 0
                                         : dateRangeElement.textContent) || null;
+                                const durationText = dateRangeElement.querySelector('span').textContent;
+
+                                const newDateRangeText = dateRangeText.replace(durationText, '');
+
+
                                 const startDatePart =
-                                    (dateRangeText === null || dateRangeText === void 0
+                                    (newDateRangeText === null || newDateRangeText === void 0
                                         ? void 0
-                                        : dateRangeText.split('–')[0]) || null;
+                                        : newDateRangeText.split('-')[0]) || null;
+
                                 const startDate =
                                     (startDatePart === null || startDatePart === void 0
                                         ? void 0
                                         : startDatePart.trim()) || null;
+
+                                // const aaaaa = dateRangeText.split('-');
+
                                 const endDatePart =
-                                    (dateRangeText === null || dateRangeText === void 0
+                                    (newDateRangeText === null || newDateRangeText === void 0
                                         ? void 0
-                                        : dateRangeText.split('–')[1]) || null;
+                                        : newDateRangeText.split('-')[1]) || null;
+
+
                                 const endDateIsPresent =
                                     (endDatePart === null || endDatePart === void 0
                                         ? void 0
                                         : endDatePart.trim().toLowerCase()) === 'present' || false;
+
                                 const endDate =
                                     endDatePart && !endDateIsPresent
                                         ? endDatePart.trim()
                                         : 'Present';
+
                                 const locationElement = node.querySelector(
-                                    '.pv-entity__location span:nth-child(2)',
+                                    'p.experience-item__location.experience-item__meta-item',
                                 );
                                 const location =
                                     (locationElement === null || locationElement === void 0
                                         ? void 0
                                         : locationElement.textContent) || null;
 
+
                                 const jobSections = node.querySelectorAll(
-                                    'li.pv-entity__position-group-role-item',
+                                    'li.experience-group-position',
                                 );
                                 const jobSectionsFading = node.querySelectorAll(
                                     'li.pv-entity__position-group-role-item-fading-timeline',
@@ -533,9 +568,11 @@ class LinkedInProfileScraper {
                                 jobRoles = [];
 
                                 console.log('+++++++++++++++job section type++++++++++++', jobSections)
+
+
                                 jobSections.forEach((role) => {
                                     const roleN = role.querySelector(
-                                        'h3 span:not(.visually-hidden)',
+                                        'h3.result-card__title ',
                                     );
                                     const jobNewTi = (roleN === null || roleN === void 0
                                         ? void 0
@@ -554,24 +591,31 @@ class LinkedInProfileScraper {
 
 
                                     const roledateRangeElement = role.querySelector(
-                                        '.pv-entity__date-range span:nth-child(2)',
+                                        'span.date-range',
                                     );
+
                                     const roledateRangeText =
                                         (roledateRangeElement === null || roledateRangeElement === void 0
                                             ? void 0
                                             : roledateRangeElement.textContent) || null;
+
+
+                                    const durationTextRole = roledateRangeElement.querySelector('span').textContent;
+
+                                    const newDateRangeTextRole = roledateRangeText.replace(durationTextRole, '');
+
                                     const rolestartDatePart =
-                                        (roledateRangeText === null || roledateRangeText === void 0
+                                        (newDateRangeTextRole === null || newDateRangeTextRole === void 0
                                             ? void 0
-                                            : roledateRangeText.split('–')[0]) || null;
+                                            : newDateRangeTextRole.split('-')[0]) || null;
                                     const rolestartDate =
                                         (rolestartDatePart === null || rolestartDatePart === void 0
                                             ? void 0
                                             : rolestartDatePart.trim()) || null;
                                     const roleendDatePart =
-                                        (roledateRangeText === null || roledateRangeText === void 0
+                                        (newDateRangeTextRole === null || newDateRangeTextRole === void 0
                                             ? void 0
-                                            : roledateRangeText.split('–')[1]) || null;
+                                            : newDateRangeTextRole.split('-')[1]) || null;
                                     const roleendDateIsPresent =
                                         (roleendDatePart === null || roleendDatePart === void 0
                                             ? void 0
@@ -581,7 +625,7 @@ class LinkedInProfileScraper {
                                             ? roleendDatePart.trim()
                                             : 'Present';
                                     const rolelocationElement = role.querySelector(
-                                        '.pv-entity__location span:nth-child(2)',
+                                        'p.experience-group-position__location.experience-group-position__meta-item',
                                     );
                                     const rolelocation =
                                         (rolelocationElement === null || rolelocationElement === void 0
@@ -598,71 +642,7 @@ class LinkedInProfileScraper {
                                         isPresent: roleendDateIsPresent
                                     })
                                 })
-                                jobSectionsFading.forEach((role) => {
-                                    const roleN = role.querySelector(
-                                        'h3 span:not(.visually-hidden)',
-                                    );
-                                    const jobNewTi = (roleN === null || roleN === void 0
-                                        ? void 0
-                                        : roleN.textContent) || null;
 
-
-
-                                    const roledescriptionElement =
-                                        role.querySelector('.pv-entity__description');
-
-
-                                    const roledescription =
-                                        (roledescriptionElement === null || roledescriptionElement === void 0
-                                            ? void 0
-                                            : roledescriptionElement.textContent) || null;
-
-
-                                    const roledateRangeElement = role.querySelector(
-                                        '.pv-entity__date-range span:nth-child(2)',
-                                    );
-                                    const roledateRangeText =
-                                        (roledateRangeElement === null || roledateRangeElement === void 0
-                                            ? void 0
-                                            : roledateRangeElement.textContent) || null;
-                                    const rolestartDatePart =
-                                        (roledateRangeText === null || roledateRangeText === void 0
-                                            ? void 0
-                                            : roledateRangeText.split('–')[0]) || null;
-                                    const rolestartDate =
-                                        (rolestartDatePart === null || rolestartDatePart === void 0
-                                            ? void 0
-                                            : rolestartDatePart.trim()) || null;
-                                    const roleendDatePart =
-                                        (roledateRangeText === null || roledateRangeText === void 0
-                                            ? void 0
-                                            : roledateRangeText.split('–')[1]) || null;
-                                    const roleendDateIsPresent =
-                                        (roleendDatePart === null || roleendDatePart === void 0
-                                            ? void 0
-                                            : roleendDatePart.trim().toLowerCase()) === 'present' || false;
-                                    const roleendDate =
-                                        roleendDatePart && !roleendDateIsPresent
-                                            ? roleendDatePart.trim()
-                                            : 'Present';
-                                    const rolelocationElement = role.querySelector(
-                                        '.pv-entity__location span:nth-child(2)',
-                                    );
-                                    const rolelocation =
-                                        (rolelocationElement === null || rolelocationElement === void 0
-                                            ? void 0
-                                            : rolelocationElement.textContent) || null;
-
-
-                                    jobRoles.push({
-                                        titles: jobNewTi,
-                                        StartDate: rolestartDate,
-                                        EndDate: roleendDate,
-                                        location: rolelocation,
-                                        description: roledescription,
-                                        isPresent: roleendDateIsPresent
-                                    })
-                                })
 
                                 const companyWithRole = node.querySelector(
                                     '.pv-entity__company-summary-info span:not(.visually-hidden)',
@@ -675,7 +655,7 @@ class LinkedInProfileScraper {
                                     jobRoles.map((k) => {
                                         data.push({
                                             title: k.titles,
-                                            company: companyNewName,
+                                            company: company,
                                             employmentType,
                                             location: k.location,
                                             startDate: k.StartDate,
@@ -696,13 +676,15 @@ class LinkedInProfileScraper {
                                         endDate,
                                         endDateIsPresent,
                                         description,
-                                        roles: jobRoles
+                                        roles: jobRoles,
+                                        // enddd: newDateRangeText
                                     });
                                 }
                             }
                             return data;
                         },
                     );
+                    console.log('++++++++++exp++++++++++++++++', rawExperiencesData)
                     const experiences = rawExperiencesData.map((rawExperience) => {
                         const startDate = utils_1.formatDate(rawExperience.startDate);
                         const endDate = utils_1.formatDate(rawExperience.endDate) || null;
@@ -742,35 +724,41 @@ class LinkedInProfileScraper {
                         scraperSessionId,
                     );
                     utils_1.statusLog(logSection, `Parsing education data...`, scraperSessionId);
+
                     const rawEducationData = yield page.$$eval(
-                        '#education-section ul > .ember-view',
+                        // '#education-section ul > .ember-view',
+                        'section.education ul > .education__list-item',
                         (nodes) => {
                             var _a, _b;
                             let data = [];
                             for (const node of nodes) {
                                 const schoolNameElement = node.querySelector(
-                                    'h3.pv-entity__school-name',
+                                    'h3.result-card__title',
                                 );
                                 const schoolName =
                                     (schoolNameElement === null || schoolNameElement === void 0
                                         ? void 0
                                         : schoolNameElement.textContent) || null;
                                 const degreeNameElement = node.querySelector(
-                                    '.pv-entity__degree-name .pv-entity__comma-item',
+                                    'h4.result-card__subtitle span:nth-child(1)',
                                 );
                                 const degreeName =
                                     (degreeNameElement === null || degreeNameElement === void 0
                                         ? void 0
                                         : degreeNameElement.textContent) || null;
                                 const fieldOfStudyElement = node.querySelector(
-                                    '.pv-entity__fos .pv-entity__comma-item',
+                                    'h4.result-card__subtitle span:nth-child(2)',
                                 );
                                 const fieldOfStudy =
                                     (fieldOfStudyElement === null || fieldOfStudyElement === void 0
                                         ? void 0
                                         : fieldOfStudyElement.textContent) || null;
+
+
                                 const dateRangeElement =
-                                    node.querySelectorAll('.pv-entity__dates time');
+                                    node.querySelectorAll('time');
+
+
                                 const startDatePart =
                                     (dateRangeElement &&
                                         ((_a = dateRangeElement[0]) === null || _a === void 0
@@ -969,36 +957,36 @@ class LinkedInProfileScraper {
             });
         const logSection = 'constructing';
         const errorPrefix = 'Error during setup.';
-        if (!userDefinedOptions.sessionCookieValue) {
-            throw new Error(`${errorPrefix} Option "sessionCookieValue" is required.`);
-        }
-        if (
-            userDefinedOptions.sessionCookieValue &&
-            typeof userDefinedOptions.sessionCookieValue !== 'string'
-        ) {
-            throw new Error(`${errorPrefix} Option "sessionCookieValue" needs to be a string.`);
-        }
-        if (userDefinedOptions.userAgent && typeof userDefinedOptions.userAgent !== 'string') {
-            throw new Error(`${errorPrefix} Option "userAgent" needs to be a string.`);
-        }
-        if (
-            userDefinedOptions.keepAlive !== undefined &&
-            typeof userDefinedOptions.keepAlive !== 'boolean'
-        ) {
-            throw new Error(`${errorPrefix} Option "keepAlive" needs to be a boolean.`);
-        }
-        if (
-            userDefinedOptions.timeout !== undefined &&
-            typeof userDefinedOptions.timeout !== 'number'
-        ) {
-            throw new Error(`${errorPrefix} Option "timeout" needs to be a number.`);
-        }
-        if (
-            userDefinedOptions.headless !== undefined &&
-            typeof userDefinedOptions.headless !== 'boolean'
-        ) {
-            throw new Error(`${errorPrefix} Option "headless" needs to be a boolean.`);
-        }
+        // if (!userDefinedOptions.sessionCookieValue) {
+        //     throw new Error(`${errorPrefix} Option "sessionCookieValue" is required.`);
+        // }
+        // if (
+        //     userDefinedOptions.sessionCookieValue &&
+        //     typeof userDefinedOptions.sessionCookieValue !== 'string'
+        // ) {
+        //     throw new Error(`${errorPrefix} Option "sessionCookieValue" needs to be a string.`);
+        // }
+        // if (userDefinedOptions.userAgent && typeof userDefinedOptions.userAgent !== 'string') {
+        //     throw new Error(`${errorPrefix} Option "userAgent" needs to be a string.`);
+        // }
+        // if (
+        //     userDefinedOptions.keepAlive !== undefined &&
+        //     typeof userDefinedOptions.keepAlive !== 'boolean'
+        // ) {
+        //     throw new Error(`${errorPrefix} Option "keepAlive" needs to be a boolean.`);
+        // }
+        // if (
+        //     userDefinedOptions.timeout !== undefined &&
+        //     typeof userDefinedOptions.timeout !== 'number'
+        // ) {
+        //     throw new Error(`${errorPrefix} Option "timeout" needs to be a number.`);
+        // }
+        // if (
+        //     userDefinedOptions.headless !== undefined &&
+        //     typeof userDefinedOptions.headless !== 'boolean'
+        // ) {
+        //     throw new Error(`${errorPrefix} Option "headless" needs to be a boolean.`);
+        // }
         this.options = Object.assign(this.options, userDefinedOptions);
         utils_1.statusLog(logSection, `Using options: ${JSON.stringify(this.options)}`);
     }
