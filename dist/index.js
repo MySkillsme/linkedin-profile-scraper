@@ -378,6 +378,24 @@ class LinkedInProfileScraper {
                     const rawUserProfileData = yield page.evaluate(() => {
                         const profileSection = document.querySelector('.pv-top-card');
                         const url = window.location.href;
+
+                        // featured section start
+                        const featuredSection = document.querySelector('section.pab-featured-section')
+                        const featuredItems = featuredSection.querySelectorAll('li.artdeco-carousel__item')
+                        let featuredLinks = [];
+                        featuredItems.forEach((items) => {
+                            const itemLinkElement = items.querySelector('a.pab-featured-item-link');
+                            const itemLink = itemLinkElement.getAttribute("href");
+
+                            if (itemLink.includes("github.com")) {
+                                featuredLinks.push(itemLink);
+                            }
+                            else if (itemLink.includes("gitlab.com")) {
+                                featuredLinks.push(itemLink);
+                            }
+                        })
+                        // featured section finish
+
                         const fullNameElement =
                             profileSection === null || profileSection === void 0
                                 ? void 0
@@ -431,6 +449,7 @@ class LinkedInProfileScraper {
                             photo,
                             description,
                             url,
+                            featuredLinks
                         };
                     });
                     const userProfile = Object.assign(Object.assign({}, rawUserProfileData), {
