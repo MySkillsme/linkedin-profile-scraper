@@ -460,6 +460,11 @@ class LinkedInProfileScraper {
                             featuredLinksGitlab
                         };
                     });
+                    utils_1.statusLog(
+                        logSection,
+                        `Got raw user profile data: ${JSON.stringify(rawUserProfileData)}`,
+                        scraperSessionId,
+                    );
                     const userProfile = Object.assign(Object.assign({}, rawUserProfileData), {
                         fullName: utils_1.getCleanText(rawUserProfileData.fullName),
                         title: utils_1.getCleanText(rawUserProfileData.title),
