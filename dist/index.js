@@ -383,6 +383,7 @@ class LinkedInProfileScraper {
                         const featuredSection = document.querySelector('section.pab-featured-section')
                         let featuredLinksGithub = [];
                         let featuredLinksGitlab = [];
+
                         if (featuredSection != null) {
 
                             const featuredItems = featuredSection.querySelectorAll('li.artdeco-carousel__item')
