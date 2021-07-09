@@ -31,7 +31,7 @@ class LinkedInProfileScraper {
         this.options = {
             sessionCookieValue: '',
             keepAlive: false,
-            timeout: 10000,
+            timeout: 60000,
             userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
             headless: true
         };
@@ -332,6 +332,7 @@ class LinkedInProfileScraper {
                         featuredLinksGitlab
                     };
                 });
+                utils_1.statusLog(logSection, `Got raw user profile data: ${rawUserProfileData}`, scraperSessionId);
                 const userProfile = Object.assign(Object.assign({}, rawUserProfileData), { fullName: utils_1.getCleanText(rawUserProfileData.fullName), title: utils_1.getCleanText(rawUserProfileData.title), location: rawUserProfileData.location ? utils_1.getLocationFromText(rawUserProfileData.location) : null, description: utils_1.getCleanText(rawUserProfileData.description), featuredLinksGithub: rawUserProfileData.featuredLinksGithub, featuredLinksGitlab: rawUserProfileData.featuredLinksGitlab });
                 utils_1.statusLog(logSection, `Got user profile data: ${JSON.stringify(userProfile)}`, scraperSessionId);
                 utils_1.statusLog(logSection, `Parsing experiences data...`, scraperSessionId);
