@@ -588,6 +588,31 @@ export class LinkedInProfileScraper {
 
         const url = window.location.href
 
+        // featured section start
+        const featuredSection = document.querySelector('section.pab-featured-section')
+        let featuredLinksGithub:string[] = [];
+        let featuredLinksGitlab:string[] = [];
+
+        if (featuredSection != null) {
+
+            const featuredItems = featuredSection.querySelectorAll('li.artdeco-carousel__item')
+            featuredItems.forEach((items) => {
+                const itemLinkElement = items.querySelector('a.pab-featured-item-link');
+                if (itemLinkElement) {
+                  const itemLink = itemLinkElement.getAttribute("href");
+  
+                  if (itemLink) {
+                    if (itemLink.includes("github.com")) {
+                        featuredLinksGithub.push(itemLink);
+                    }
+                    else if (itemLink.includes("gitlab.com")) {
+                        featuredLinksGitlab.push(itemLink);
+                    }
+                  }
+                }
+            })
+        }
+
         const fullNameElement = profileSection?.querySelector('h1.text-heading-xlarge.inline.t-24.v-align-middle.break-words:first-child')
         const fullName = fullNameElement?.textContent || null
 
