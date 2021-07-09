@@ -11,6 +11,8 @@ export interface Profile {
     photo: string | null;
     description: string | null;
     url: string;
+    featuredLinksGithub: string[];
+    featuredLinksGitlab: string[];
 }
 export interface Experience {
     title: string | null;

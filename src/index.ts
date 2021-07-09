@@ -43,6 +43,7 @@ interface RawExperience {
   endDate: string | null;
   endDateIsPresent: boolean;
   description: string | null;
+  roles?: any[] | null;
 }
 
 export interface Experience {
@@ -698,7 +699,7 @@ export class LinkedInProfileScraper {
           const jobSectionsFading = node.querySelectorAll(
             'li.pv-entity__position-group-role-item-fading-timeline',
           );
-          const jobRoles = [];
+          const jobRoles:any[] = [];
 
           console.log('+++++++++++++++job section type++++++++++++', jobSections)
           jobSections.forEach((role) => {
