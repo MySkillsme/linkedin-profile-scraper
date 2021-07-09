@@ -381,19 +381,24 @@ class LinkedInProfileScraper {
 
                         // featured section start
                         const featuredSection = document.querySelector('section.pab-featured-section')
-                        const featuredItems = featuredSection.querySelectorAll('li.artdeco-carousel__item')
                         let featuredLinks = [];
-                        featuredItems.forEach((items) => {
-                            const itemLinkElement = items.querySelector('a.pab-featured-item-link');
-                            const itemLink = itemLinkElement.getAttribute("href");
+                        if (featuredSection != null) {
 
-                            if (itemLink.includes("github.com")) {
-                                featuredLinks.push(itemLink);
-                            }
-                            else if (itemLink.includes("gitlab.com")) {
-                                featuredLinks.push(itemLink);
-                            }
-                        })
+                            const featuredItems = featuredSection.querySelectorAll('li.artdeco-carousel__item')
+                            featuredItems.forEach((items) => {
+                                const itemLinkElement = items.querySelector('a.pab-featured-item-link');
+                                const itemLink = itemLinkElement.getAttribute("href");
+
+                                if (itemLink.includes("github.com")) {
+                                    featuredLinks.push(itemLink);
+                                }
+                                else if (itemLink.includes("gitlab.com")) {
+                                    featuredLinks.push(itemLink);
+                                }
+                            })
+                        }
+
+
                         // featured section finish
 
                         const fullNameElement =
