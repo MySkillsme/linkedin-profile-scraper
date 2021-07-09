@@ -647,6 +647,8 @@ export class LinkedInProfileScraper {
 
       // Convert the raw data to clean data using our utils
       // So we don't have to inject our util methods inside the browser context, which is too damn difficult using TypeScript
+      statusLog(logSection, `Got raw user profile data: ${rawUserProfileData}`, scraperSessionId)
+
       const userProfile: Profile = {
         ...rawUserProfileData,
         fullName: getCleanText(rawUserProfileData.fullName),
