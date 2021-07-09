@@ -19,6 +19,8 @@ interface RawProfile {
   photo: string | null;
   description: string | null;
   url: string;
+  featuredLinksGithub: string[];
+  featuredLinksGitlab: string[];
 }
 
 export interface Profile {
@@ -28,6 +30,8 @@ export interface Profile {
   photo: string | null;
   description: string | null;
   url: string;
+  featuredLinksGithub: string[];
+  featuredLinksGitlab: string[];
 }
 
 interface RawExperience {
@@ -634,7 +638,9 @@ export class LinkedInProfileScraper {
           location,
           photo,
           description,
-          url
+          url,
+          featuredLinksGithub,
+          featuredLinksGitlab
         } as RawProfile
       })
 
@@ -646,6 +652,8 @@ export class LinkedInProfileScraper {
         title: getCleanText(rawUserProfileData.title),
         location: rawUserProfileData.location ? getLocationFromText(rawUserProfileData.location) : null,
         description: getCleanText(rawUserProfileData.description),
+        featuredLinksGithub: rawUserProfileData.featuredLinksGithub,
+        featuredLinksGitlab: rawUserProfileData.featuredLinksGitlab,
       }
 
       statusLog(logSection, `Got user profile data: ${JSON.stringify(userProfile)}`, scraperSessionId)
