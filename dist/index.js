@@ -467,6 +467,8 @@ class LinkedInProfileScraper {
                             ? utils_1.getLocationFromText(rawUserProfileData.location)
                             : null,
                         description: utils_1.getCleanText(rawUserProfileData.description),
+                        featuredLinksGithub: rawUserProfileData.featuredLinksGithub,
+                        featuredLinksGitlab: rawUserProfileData.featuredLinksGitlab,
                     });
                     utils_1.statusLog(
                         logSection,
