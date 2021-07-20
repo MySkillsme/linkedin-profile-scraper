@@ -558,6 +558,7 @@ export class LinkedInProfileScraper {
 
       for (let j = 0; j < expandButtonsSelectors.length; j++) {
         const buttonSelector = expandButtonsSelectors[j];
+        statusLog(logSection, `j: ${j}`);
         try {
           /*
           let element = await page.$(buttonSelector);
@@ -586,42 +587,42 @@ export class LinkedInProfileScraper {
 
           let elements = await page.$$(buttonSelector);
           if (Array.isArray(elements)) {
-            while (elements.length !== 0) {
-              for (let i = 0; i < elements.length; i++) {
-                console.log('i: ', i);
-                let element = elements[i];
-                let value = await page.evaluate(el => el.textContent, element);
-                statusLog(logSection, `button value: ${value}`, scraperSessionId);
-                if (value.includes('more')) {
-                  statusLog(logSection, 'load more button verified');
-                  statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
-                  await page.click(buttonSelector);
-                  elements = await page.$$(buttonSelector);
-                  if (elements.length === 0) {
-                    statusLog(logSection, 'no suitable element exist', scraperSessionId);
-                    break;
+            let i = 0;
+            while (elements.length !== 0 && i < elements.length) {
+              console.log('i: ', i);
+              let element = elements[i];
+              let value = await page.evaluate(el => el.textContent, element);
+              statusLog(logSection, `button value: ${value}`, scraperSessionId);
+              if (value.includes('more')) {
+                statusLog(logSection, 'load more button verified');
+                statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
+                await page.click(buttonSelector);
+                elements = await page.$$(buttonSelector);
+                if (elements.length === 0) {
+                  statusLog(logSection, 'no suitable element exist', scraperSessionId);
+                  break;
+                }
+                else {
+                  statusLog(logSection, 'at least 1 suitable element exists', scraperSessionId);
+                  i = -1;
+                }
+              }
+              else {
+                statusLog(logSection, 'is not a load more button', scraperSessionId);
+                if (i === elements.length - 1) {
+                  if (value.includes('experiences') || i !== 2) {
+                    statusLog(logSection, 'This is the end. Break the loop. ', scraperSessionId);
+                    elements = [];
+                    break; 
                   }
                   else {
-                    statusLog(logSection, 'at least 1 suitable element exists', scraperSessionId);
+                    statusLog(logSection, 'Refresh the elements and check again. ', scraperSessionId);
+                    elements = await page.$$(buttonSelector);
                     i = -1;
                   }
                 }
-                else {
-                  statusLog(logSection, 'is not a load more button', scraperSessionId);
-                  if (i === elements.length - 1) {
-                    if (value.includes('experiences') || i !== 2) {
-                      statusLog(logSection, 'This is the end. Break the loop. ', scraperSessionId);
-                      elements = [];
-                      break; 
-                    }
-                    else {
-                      statusLog(logSection, 'Refresh the elements and check again. ', scraperSessionId);
-                      elements = await page.$$(buttonSelector);
-                      i = -1;
-                    }
-                  }
-                }
               }
+              i += 1;
             }
           }
 
