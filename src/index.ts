@@ -603,7 +603,8 @@ export class LinkedInProfileScraper {
                 statusLog(logSection, 'load more button verified');
                 statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
                 await page.click(buttonSelector);
-                await delay(3000);
+                await delay(5000);
+                statusLog(logSection, 'delay completed', scraperSessionId);
                 elements = await page.$$(buttonSelector);
                 if (elements.length === 0) {
                   statusLog(logSection, 'no suitable element exist', scraperSessionId);

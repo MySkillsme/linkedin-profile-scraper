@@ -281,7 +281,8 @@ class LinkedInProfileScraper {
                                     utils_1.statusLog(logSection, 'load more button verified');
                                     utils_1.statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
                                     yield page.click(buttonSelector);
-                                    yield delay(3000);
+                                    yield delay(5000);
+                                    utils_1.statusLog(logSection, 'delay completed', scraperSessionId);
                                     elements = yield page.$$(buttonSelector);
                                     if (elements.length === 0) {
                                         utils_1.statusLog(logSection, 'no suitable element exist', scraperSessionId);
