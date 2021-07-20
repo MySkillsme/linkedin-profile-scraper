@@ -606,8 +606,14 @@ export class LinkedInProfileScraper {
                 else {
                   statusLog(logSection, 'is not a load more button');
                   if (i === elements.length - 1) {
-                    elements = [];
-                    break;
+                    if (value.includes('experiences')) {
+                      elements = [];
+                      break; 
+                    }
+                    else {
+                      elements = await page.$$(buttonSelector);
+                      break;
+                    }
                   }
                 }
               }
