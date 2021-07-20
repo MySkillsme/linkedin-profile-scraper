@@ -543,8 +543,8 @@ export class LinkedInProfileScraper {
       // Only click the expanding buttons when they exist
       const expandButtonsSelectors = [
         '.pv-profile-section.pv-about-section .inline-show-more-text__button.link', // About
-        '#experience-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle', // Experience
-        '.pv-profile-section.education-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle', // Education
+        '#experience-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle [aria-expanded="false"]', // Experience
+        '.pv-profile-section.education-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle [aria-expanded="false"]', // Education
         '.pv-skill-categories-section [data-control-name="skill_details"]', // Skills
       ];
 
@@ -558,9 +558,18 @@ export class LinkedInProfileScraper {
 
       for (const buttonSelector of expandButtonsSelectors) {
         try {
-          if (await page.$(buttonSelector) !== null) {
-            statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId)
-            await page.click(buttonSelector);
+          let element = await page.$(buttonSelector);
+          while (element !== null) {
+            let value = await page.evaluate(el => el.textContent, element);
+            if (value.includes('more')) {
+              statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
+              await page.click(buttonSelector);
+              element = await page.$(buttonSelector);
+            }
+            else {
+              element = null;
+              break;
+            }
           }
         } catch (err) {
           statusLog(logSection, `Could not find or click expand button selector "${buttonSelector}". So we skip that one.`, scraperSessionId)
