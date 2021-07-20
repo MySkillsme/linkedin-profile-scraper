@@ -543,8 +543,8 @@ export class LinkedInProfileScraper {
       // Only click the expanding buttons when they exist
       const expandButtonsSelectors = [
         '.pv-profile-section.pv-about-section .inline-show-more-text__button.link', // About
-        '#experience-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle', // Experience
-        '.pv-profile-section.education-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle', // Education
+        '#experience-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle [aria-expanded="false"]', // Experience
+        '.pv-profile-section.education-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle [aria-expanded="false"]', // Education
         '.pv-skill-categories-section [data-control-name="skill_details"]', // Skills
       ];
 
