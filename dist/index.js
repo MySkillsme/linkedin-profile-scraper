@@ -250,8 +250,8 @@ class LinkedInProfileScraper {
                 utils_1.statusLog(logSection, 'Parsing data...', scraperSessionId);
                 const expandButtonsSelectors = [
                     '.pv-profile-section.pv-about-section .inline-show-more-text__button.link',
-                    '#experience-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle [aria-expanded="false"]',
-                    '.pv-profile-section.education-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle [aria-expanded="false"]',
+                    '#experience-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle',
+                    '.pv-profile-section.education-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle',
                     '.pv-skill-categories-section [data-control-name="skill_details"]',
                 ];
                 const seeMoreButtonsSelectors = [
