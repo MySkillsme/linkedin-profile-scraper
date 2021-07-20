@@ -285,7 +285,7 @@ class LinkedInProfileScraper {
                                     else {
                                         utils_1.statusLog(logSection, 'is not a load more button', scraperSessionId);
                                         if (i === elements.length - 1) {
-                                            if (value.includes('experiences')) {
+                                            if (value.includes('experiences') || i !== 2) {
                                                 utils_1.statusLog(logSection, 'This is the end. Break the loop. ', scraperSessionId);
                                                 elements = [];
                                                 break;
