@@ -267,7 +267,7 @@ class LinkedInProfileScraper {
                 utils_1.statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId);
                 for (let j = 0; j < expandButtonsSelectors.length; j++) {
                     const buttonSelector = expandButtonsSelectors[j];
-                    utils_1.statusLog(logSection, `j: ${j}`);
+                    console.log('j: ', j);
                     try {
                         let elements = yield page.$$(buttonSelector);
                         if (Array.isArray(elements)) {
@@ -280,7 +280,7 @@ class LinkedInProfileScraper {
                                 if (value.includes('more')) {
                                     utils_1.statusLog(logSection, 'load more button verified');
                                     utils_1.statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
-                                    yield page.click(buttonSelector);
+                                    yield elements[i].click();
                                     yield delay(5000);
                                     utils_1.statusLog(logSection, 'delay completed', scraperSessionId);
                                     elements = yield page.$$(buttonSelector);
