@@ -169,6 +169,12 @@ async function autoScroll(page: Page) {
   });
 }
 
+function delay(time) {
+  return new Promise(function(resolve) { 
+      setTimeout(resolve, time)
+  });
+}
+
 export class LinkedInProfileScraper {
   readonly options: ScraperOptions = {
     sessionCookieValue: '',
@@ -597,6 +603,7 @@ export class LinkedInProfileScraper {
                 statusLog(logSection, 'load more button verified');
                 statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
                 await page.click(buttonSelector);
+                await delay(3000);
                 elements = await page.$$(buttonSelector);
                 if (elements.length === 0) {
                   statusLog(logSection, 'no suitable element exist', scraperSessionId);
