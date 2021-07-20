@@ -595,13 +595,14 @@ export class LinkedInProfileScraper {
                   statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
                   await page.click(buttonSelector);
                   elements = await page.$$(buttonSelector);
-                  if (elements.length !== 0) {
+                  if (elements.length === 0) {
                     statusLog(logSection, 'no suitable element exist', scraperSessionId);
+                    break;
                   }
                   else {
                     statusLog(logSection, 'at least 1 suitable element exists', scraperSessionId);
+                    i = 0;
                   }
-                  break;
                 }
                 else {
                   statusLog(logSection, 'is not a load more button', scraperSessionId);
@@ -614,7 +615,7 @@ export class LinkedInProfileScraper {
                     else {
                       statusLog(logSection, 'Refresh the elements and check again. ', scraperSessionId);
                       elements = await page.$$(buttonSelector);
-                      break;
+                      i = 0;
                     }
                   }
                 }
