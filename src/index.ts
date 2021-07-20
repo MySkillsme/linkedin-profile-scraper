@@ -564,7 +564,7 @@ export class LinkedInProfileScraper {
 
       for (let j = 0; j < expandButtonsSelectors.length; j++) {
         const buttonSelector = expandButtonsSelectors[j];
-        statusLog(logSection, `j: ${j}`);
+        console.log('j: ', j);
         try {
           /*
           let element = await page.$(buttonSelector);
@@ -602,7 +602,7 @@ export class LinkedInProfileScraper {
               if (value.includes('more')) {
                 statusLog(logSection, 'load more button verified');
                 statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
-                await page.click(buttonSelector);
+                await elements[i].click();
                 await delay(5000);
                 statusLog(logSection, 'delay completed', scraperSessionId);
                 elements = await page.$$(buttonSelector);
