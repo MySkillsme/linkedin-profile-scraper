@@ -250,8 +250,8 @@ class LinkedInProfileScraper {
                 utils_1.statusLog(logSection, 'Parsing data...', scraperSessionId);
                 const expandButtonsSelectors = [
                     '.pv-profile-section.pv-about-section .inline-show-more-text__button.link',
-                    '#experience-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle',
-                    '.pv-profile-section.education-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle',
+                    '#experience-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle [aria-expanded="false"]',
+                    '.pv-profile-section.education-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle [aria-expanded="false"]',
                     '.pv-skill-categories-section [data-control-name="skill_details"]',
                 ];
                 const seeMoreButtonsSelectors = [
@@ -262,9 +262,18 @@ class LinkedInProfileScraper {
                 utils_1.statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId);
                 for (const buttonSelector of expandButtonsSelectors) {
                     try {
-                        if ((yield page.$(buttonSelector)) !== null) {
-                            utils_1.statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
-                            yield page.click(buttonSelector);
+                        let element = yield page.$(buttonSelector);
+                        while (element !== null) {
+                            let value = yield page.evaluate(el => el.textContent, element);
+                            if (value.includes('more')) {
+                                utils_1.statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
+                                yield page.click(buttonSelector);
+                                element = yield page.$(buttonSelector);
+                            }
+                            else {
+                                element = null;
+                                break;
+                            }
                         }
                     }
                     catch (err) {
