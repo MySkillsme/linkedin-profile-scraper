@@ -260,12 +260,14 @@ class LinkedInProfileScraper {
                     'div.pv-profile-section__position-group-pager.pv-profile-section__actions-inline.ember-view button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle.artdeco-button.artdeco-button--tertiary.artdeco-button--muted'
                 ];
                 utils_1.statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId);
-                for (const buttonSelector of expandButtonsSelectors) {
+                for (let j = 0; j < expandButtonsSelectors.length; j++) {
+                    const buttonSelector = expandButtonsSelectors[j];
                     try {
                         let elements = yield page.$$(buttonSelector);
                         if (Array.isArray(elements)) {
                             while (elements.length !== 0) {
                                 for (let i = 0; i < elements.length; i++) {
+                                    console.log('i: ', i);
                                     let element = elements[i];
                                     let value = yield page.evaluate(el => el.textContent, element);
                                     utils_1.statusLog(logSection, `button value: ${value}`, scraperSessionId);
@@ -280,7 +282,7 @@ class LinkedInProfileScraper {
                                         }
                                         else {
                                             utils_1.statusLog(logSection, 'at least 1 suitable element exists', scraperSessionId);
-                                            i = 0;
+                                            i = -1;
                                         }
                                     }
                                     else {
@@ -294,7 +296,7 @@ class LinkedInProfileScraper {
                                             else {
                                                 utils_1.statusLog(logSection, 'Refresh the elements and check again. ', scraperSessionId);
                                                 elements = yield page.$$(buttonSelector);
-                                                i = 0;
+                                                i = -1;
                                             }
                                         }
                                     }

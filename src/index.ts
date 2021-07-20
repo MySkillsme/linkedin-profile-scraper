@@ -556,7 +556,8 @@ export class LinkedInProfileScraper {
 
       statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId)
 
-      for (const buttonSelector of expandButtonsSelectors) {
+      for (let j = 0; j < expandButtonsSelectors.length; j++) {
+        const buttonSelector = expandButtonsSelectors[j];
         try {
           /*
           let element = await page.$(buttonSelector);
@@ -587,6 +588,7 @@ export class LinkedInProfileScraper {
           if (Array.isArray(elements)) {
             while (elements.length !== 0) {
               for (let i = 0; i < elements.length; i++) {
+                console.log('i: ', i);
                 let element = elements[i];
                 let value = await page.evaluate(el => el.textContent, element);
                 statusLog(logSection, `button value: ${value}`, scraperSessionId);
@@ -601,7 +603,7 @@ export class LinkedInProfileScraper {
                   }
                   else {
                     statusLog(logSection, 'at least 1 suitable element exists', scraperSessionId);
-                    i = 0;
+                    i = -1;
                   }
                 }
                 else {
@@ -615,7 +617,7 @@ export class LinkedInProfileScraper {
                     else {
                       statusLog(logSection, 'Refresh the elements and check again. ', scraperSessionId);
                       elements = await page.$$(buttonSelector);
-                      i = 0;
+                      i = -1;
                     }
                   }
                 }
