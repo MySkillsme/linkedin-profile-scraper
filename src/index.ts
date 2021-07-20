@@ -624,6 +624,7 @@ export class LinkedInProfileScraper {
                   }
                   else {
                     statusLog(logSection, 'Refresh the elements and check again. ', scraperSessionId);
+                    await delay(3000);
                     elements = await page.$$(buttonSelector);
                     i = -1;
                   }

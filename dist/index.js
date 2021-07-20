@@ -26,6 +26,11 @@ function autoScroll(page) {
         });
     });
 }
+function delay(time) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, time);
+    });
+}
 class LinkedInProfileScraper {
     constructor(userDefinedOptions) {
         this.options = {
@@ -276,6 +281,7 @@ class LinkedInProfileScraper {
                                     utils_1.statusLog(logSection, 'load more button verified');
                                     utils_1.statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
                                     yield page.click(buttonSelector);
+                                    yield delay(3000);
                                     elements = yield page.$$(buttonSelector);
                                     if (elements.length === 0) {
                                         utils_1.statusLog(logSection, 'no suitable element exist', scraperSessionId);
@@ -296,6 +302,7 @@ class LinkedInProfileScraper {
                                         }
                                         else {
                                             utils_1.statusLog(logSection, 'Refresh the elements and check again. ', scraperSessionId);
+                                            yield delay(3000);
                                             elements = yield page.$$(buttonSelector);
                                             i = -1;
                                         }
