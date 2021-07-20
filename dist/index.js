@@ -262,26 +262,42 @@ class LinkedInProfileScraper {
                 utils_1.statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId);
                 for (const buttonSelector of expandButtonsSelectors) {
                     try {
-                        let element = yield page.$(buttonSelector);
-                        while (element !== null) {
-                            let value = yield page.evaluate(el => el.textContent, element);
-                            utils_1.statusLog(logSection, `button value: ${value}`, scraperSessionId);
-                            if (value.includes('more')) {
-                                utils_1.statusLog(logSection, 'load more button verified');
-                                utils_1.statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
-                                yield page.click(buttonSelector);
-                                element = yield page.$(buttonSelector);
-                                if (element === null) {
-                                    utils_1.statusLog(logSection, 'element is null', scraperSessionId);
+                        let elements = yield page.$$(buttonSelector);
+                        if (Array.isArray(elements)) {
+                            while (elements.length !== 0) {
+                                for (let i = 0; i < elements.length; i++) {
+                                    let element = elements[i];
+                                    let value = yield page.evaluate(el => el.textContent, element);
+                                    utils_1.statusLog(logSection, `button value: ${value}`, scraperSessionId);
+                                    if (value.includes('more')) {
+                                        utils_1.statusLog(logSection, 'load more button verified');
+                                        utils_1.statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
+                                        yield page.click(buttonSelector);
+                                        elements = yield page.$$(buttonSelector);
+                                        if (elements.length !== 0) {
+                                            utils_1.statusLog(logSection, 'no suitable element exist', scraperSessionId);
+                                        }
+                                        else {
+                                            utils_1.statusLog(logSection, 'at least 1 suitable element exists', scraperSessionId);
+                                        }
+                                        break;
+                                    }
+                                    else {
+                                        utils_1.statusLog(logSection, 'is not a load more button', scraperSessionId);
+                                        if (i === elements.length - 1) {
+                                            if (value.includes('experiences')) {
+                                                utils_1.statusLog(logSection, 'This is the end. Break the loop. ', scraperSessionId);
+                                                elements = [];
+                                                break;
+                                            }
+                                            else {
+                                                utils_1.statusLog(logSection, 'Refresh the elements and check again. ', scraperSessionId);
+                                                elements = yield page.$$(buttonSelector);
+                                                break;
+                                            }
+                                        }
+                                    }
                                 }
-                                else {
-                                    utils_1.statusLog(logSection, 'element is not null', scraperSessionId);
-                                }
-                            }
-                            else {
-                                utils_1.statusLog(logSection, 'is not a load more button');
-                                element = null;
-                                break;
                             }
                         }
                     }

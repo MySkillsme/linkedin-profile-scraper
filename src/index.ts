@@ -604,13 +604,15 @@ export class LinkedInProfileScraper {
                   break;
                 }
                 else {
-                  statusLog(logSection, 'is not a load more button');
+                  statusLog(logSection, 'is not a load more button', scraperSessionId);
                   if (i === elements.length - 1) {
                     if (value.includes('experiences')) {
+                      statusLog(logSection, 'This is the end. Break the loop. ', scraperSessionId);
                       elements = [];
                       break; 
                     }
                     else {
+                      statusLog(logSection, 'Refresh the elements and check again. ', scraperSessionId);
                       elements = await page.$$(buttonSelector);
                       break;
                     }
