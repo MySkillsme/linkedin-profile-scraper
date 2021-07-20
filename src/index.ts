@@ -558,9 +558,18 @@ export class LinkedInProfileScraper {
 
       for (const buttonSelector of expandButtonsSelectors) {
         try {
-          if (await page.$(buttonSelector) !== null) {
-            statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId)
-            await page.click(buttonSelector);
+          let element = await page.$(buttonSelector);
+          while (element !== null) {
+            let value = await page.evaluate(el => el.textContent, element);
+            if (value.includes('more')) {
+              statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
+              await page.click(buttonSelector);
+              element = await page.$(buttonSelector);
+            }
+            else {
+              element = null;
+              break;
+            }
           }
         } catch (err) {
           statusLog(logSection, `Could not find or click expand button selector "${buttonSelector}". So we skip that one.`, scraperSessionId)
