@@ -563,11 +563,19 @@ export class LinkedInProfileScraper {
             let value = await page.evaluate(el => el.textContent, element);
             statusLog(logSection, `button value: ${value}`, scraperSessionId);
             if (value.includes('more')) {
+              statusLog(logSection, 'load more button verified');
               statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
               await page.click(buttonSelector);
               element = await page.$(buttonSelector);
+              if (element === null) {
+                statusLog(logSection, 'element is null', scraperSessionId);
+              }
+              else {
+                statusLog(logSection, 'element is not null', scraperSessionId);
+              }
             }
             else {
+              statusLog(logSection, 'is not a load more button');
               element = null;
               break;
             }
