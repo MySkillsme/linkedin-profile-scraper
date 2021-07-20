@@ -265,6 +265,7 @@ class LinkedInProfileScraper {
                         let element = yield page.$(buttonSelector);
                         while (element !== null) {
                             let value = yield page.evaluate(el => el.textContent, element);
+                            utils_1.statusLog(logSection, `button value: ${value}`, scraperSessionId);
                             if (value.includes('more')) {
                                 utils_1.statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
                                 yield page.click(buttonSelector);
