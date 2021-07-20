@@ -274,13 +274,14 @@ class LinkedInProfileScraper {
                                         utils_1.statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
                                         yield page.click(buttonSelector);
                                         elements = yield page.$$(buttonSelector);
-                                        if (elements.length !== 0) {
+                                        if (elements.length === 0) {
                                             utils_1.statusLog(logSection, 'no suitable element exist', scraperSessionId);
+                                            break;
                                         }
                                         else {
                                             utils_1.statusLog(logSection, 'at least 1 suitable element exists', scraperSessionId);
+                                            i = 0;
                                         }
-                                        break;
                                     }
                                     else {
                                         utils_1.statusLog(logSection, 'is not a load more button', scraperSessionId);
@@ -293,7 +294,7 @@ class LinkedInProfileScraper {
                                             else {
                                                 utils_1.statusLog(logSection, 'Refresh the elements and check again. ', scraperSessionId);
                                                 elements = yield page.$$(buttonSelector);
-                                                break;
+                                                i = 0;
                                             }
                                         }
                                     }
