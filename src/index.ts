@@ -558,6 +558,7 @@ export class LinkedInProfileScraper {
 
       for (const buttonSelector of expandButtonsSelectors) {
         try {
+          /*
           let element = await page.$(buttonSelector);
           while (element !== null) {
             let value = await page.evaluate(el => el.textContent, element);
@@ -580,6 +581,39 @@ export class LinkedInProfileScraper {
               break;
             }
           }
+          */
+
+          let elements = await page.$$(buttonSelector);
+          if (Array.isArray(elements)) {
+            while (elements.length !== 0) {
+              for (let i = 0; i < elements.length; i++) {
+                let element = elements[i];
+                let value = await page.evaluate(el => el.textContent, element);
+                statusLog(logSection, `button value: ${value}`, scraperSessionId);
+                if (value.includes('more')) {
+                  statusLog(logSection, 'load more button verified');
+                  statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
+                  await page.click(buttonSelector);
+                  elements = await page.$$(buttonSelector);
+                  if (elements.length !== 0) {
+                    statusLog(logSection, 'no suitable element exist', scraperSessionId);
+                  }
+                  else {
+                    statusLog(logSection, 'at least 1 suitable element exists', scraperSessionId);
+                  }
+                  break;
+                }
+                else {
+                  statusLog(logSection, 'is not a load more button');
+                  if (i === elements.length - 1) {
+                    elements = [];
+                    break;
+                  }
+                }
+              }
+            }
+          }
+
         } catch (err) {
           statusLog(logSection, `Could not find or click expand button selector "${buttonSelector}". So we skip that one.`, scraperSessionId)
         }
