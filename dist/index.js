@@ -255,7 +255,8 @@ class LinkedInProfileScraper {
                 utils_1.statusLog(logSection, 'Parsing data...', scraperSessionId);
                 const expandButtonsSelectors = [
                     '.pv-profile-section.pv-about-section .inline-show-more-text__button.link',
-                    '#experience-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle',
+                    // '#experience-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle',
+                    '#experience-section div.pv-experience-section__see-more.pv-profile-section__actions-inline.ember-view button[aria-expanded="false"]',
                     '.pv-profile-section.education-section button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle',
                     '.pv-skill-categories-section [data-control-name="skill_details"]',
                 ];
@@ -265,56 +266,108 @@ class LinkedInProfileScraper {
                     'div.pv-profile-section__position-group-pager.pv-profile-section__actions-inline.ember-view button.pv-profile-section__see-more-inline.pv-profile-section__text-truncate-toggle.artdeco-button.artdeco-button--tertiary.artdeco-button--muted'
                 ];
                 utils_1.statusLog(logSection, 'Expanding all sections by clicking their "See more" buttons', scraperSessionId);
-                for (let j = 0; j < expandButtonsSelectors.length; j++) {
-                    const buttonSelector = expandButtonsSelectors[j];
-                    console.log('j: ', j);
+                // for (let j = 0; j < expandButtonsSelectors.length; j++) {
+                //     const buttonSelector = expandButtonsSelectors[j];
+                //     console.log('j: ', j);
+                //     try {
+                //         let elements = yield page.$$(buttonSelector);
+                //         if (Array.isArray(elements)) {
+                //             let i = 0;
+                //             while (elements.length !== 0 && i < elements.length) {
+                //                 console.log('i: ', i);
+                //                 let element = elements[i];
+                //                 let value = yield page.evaluate(el => el.textContent, element);
+                //                 utils_1.statusLog(logSection, `button value: ${value}`, scraperSessionId);
+                //                 if (value.includes('more')) {
+                //                     utils_1.statusLog(logSection, 'load more button verified');
+                //                     utils_1.statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
+                //                     yield elements[i].click();
+                //                     yield delay(5000);
+                //                     utils_1.statusLog(logSection, 'delay completed', scraperSessionId);
+                //                     elements = yield page.$$(buttonSelector);
+                //                     if (elements.length === 0) {
+                //                         utils_1.statusLog(logSection, 'no suitable element exist', scraperSessionId);
+                //                         break;
+                //                     }
+                //                     else {
+                //                         utils_1.statusLog(logSection, 'at least 1 suitable element exists', scraperSessionId);
+                //                         i = -1;
+                //                     }
+                //                 }
+                //                 else {
+                //                     utils_1.statusLog(logSection, 'is not a load more button', scraperSessionId);
+                //                     if (i === elements.length - 1) {
+                //                         if (value.includes('experiences') || i !== 2) {
+                //                             utils_1.statusLog(logSection, 'This is the end. Break the loop. ', scraperSessionId);
+                //                             elements = [];
+                //                             break;
+                //                         }
+                //                         else {
+                //                             utils_1.statusLog(logSection, 'Refresh the elements and check again. ', scraperSessionId);
+                //                             yield delay(3000);
+                //                             elements = yield page.$$(buttonSelector);
+                //                             i = -1;
+                //                         }
+                //                     }
+                //                 }
+                //                 i += 1;
+                //             }
+                //         }
+                //     }
+                //     catch (err) {
+                //         utils_1.statusLog(logSection, `Could not find or click expand button selector "${buttonSelector}". So we skip that one.`, scraperSessionId);
+                //     }
+                // }
+
+                for (const buttonSelector of expandButtonsSelectors) {
+
                     try {
-                        let elements = yield page.$$(buttonSelector);
-                        if (Array.isArray(elements)) {
-                            let i = 0;
-                            while (elements.length !== 0 && i < elements.length) {
-                                console.log('i: ', i);
-                                let element = elements[i];
-                                let value = yield page.evaluate(el => el.textContent, element);
-                                utils_1.statusLog(logSection, `button value: ${value}`, scraperSessionId);
-                                if (value.includes('more')) {
-                                    utils_1.statusLog(logSection, 'load more button verified');
-                                    utils_1.statusLog(logSection, `Clicking button ${buttonSelector}`, scraperSessionId);
-                                    yield elements[i].click();
-                                    yield delay(5000);
-                                    utils_1.statusLog(logSection, 'delay completed', scraperSessionId);
-                                    elements = yield page.$$(buttonSelector);
-                                    if (elements.length === 0) {
-                                        utils_1.statusLog(logSection, 'no suitable element exist', scraperSessionId);
-                                        break;
-                                    }
-                                    else {
-                                        utils_1.statusLog(logSection, 'at least 1 suitable element exists', scraperSessionId);
-                                        i = -1;
-                                    }
-                                }
-                                else {
-                                    utils_1.statusLog(logSection, 'is not a load more button', scraperSessionId);
-                                    if (i === elements.length - 1) {
-                                        if (value.includes('experiences') || i !== 2) {
-                                            utils_1.statusLog(logSection, 'This is the end. Break the loop. ', scraperSessionId);
-                                            elements = [];
-                                            break;
-                                        }
-                                        else {
-                                            utils_1.statusLog(logSection, 'Refresh the elements and check again. ', scraperSessionId);
-                                            yield delay(3000);
-                                            elements = yield page.$$(buttonSelector);
-                                            i = -1;
-                                        }
-                                    }
-                                }
-                                i += 1;
-                            }
+                        if ((yield page.$(buttonSelector)) !== null) {
+                            utils_1.statusLog(
+                                logSection,
+                                `Clicking button ${buttonSelector}`,
+                                scraperSessionId,
+                            );
+                            yield page.click(buttonSelector);
                         }
+                    } catch (err) {
+                        utils_1.statusLog(
+                            logSection,
+                            `Could not find or click expand button selector "${buttonSelector}". So we skip that one.`,
+                            scraperSessionId,
+                        );
+
                     }
-                    catch (err) {
-                        utils_1.statusLog(logSection, `Could not find or click expand button selector "${buttonSelector}". So we skip that one.`, scraperSessionId);
+
+                }
+                yield page.waitFor(100);
+                yield autoScroll(page);
+                let loop = true;
+                let buttonSelector = '#experience-section div.pv-experience-section__see-more.pv-profile-section__actions-inline.ember-view button[aria-expanded="false"]';
+
+                while (loop) {
+                    try {
+                        if ((yield page.$(buttonSelector)) !== null) {
+
+                            utils_1.statusLog(
+                                logSection,
+                                `++++++++++++++++++++++++++++++Clicking button ${buttonSelector} `,
+                                scraperSessionId,
+                            );
+                            yield page.click(buttonSelector);
+                            yield page.waitFor(100);
+                            yield autoScroll(page);
+                        }
+                        else {
+                            loop = false;
+                        }
+                    } catch (err) {
+                        utils_1.statusLog(
+                            logSection,
+                            `Could not find or click expand button selector "${buttonSelector}". So we skip that one.`,
+                            scraperSessionId,
+                        );
+                        loop = false;
                     }
                 }
                 yield page.waitFor(100);
@@ -530,10 +583,12 @@ class LinkedInProfileScraper {
                     const durationInDaysWithEndDate = (startDate && endDate && !endDateIsPresent) ? utils_1.getDurationInDays(startDate, endDate) : null;
                     const durationInDaysForPresentDate = (endDateIsPresent && startDate) ? utils_1.getDurationInDays(startDate, new Date()) : null;
                     const durationInDays = endDateIsPresent ? durationInDaysForPresentDate : durationInDaysWithEndDate;
-                    return Object.assign(Object.assign({}, rawExperience), { title: utils_1.getCleanText(rawExperience.title), company: utils_1.getCleanText(rawExperience.company), employmentType: utils_1.getCleanText(rawExperience.employmentType), location: (rawExperience === null || rawExperience === void 0 ? void 0 : rawExperience.location) ? utils_1.getLocationFromText(rawExperience.location) : null, startDate,
+                    return Object.assign(Object.assign({}, rawExperience), {
+                        title: utils_1.getCleanText(rawExperience.title), company: utils_1.getCleanText(rawExperience.company), employmentType: utils_1.getCleanText(rawExperience.employmentType), location: (rawExperience === null || rawExperience === void 0 ? void 0 : rawExperience.location) ? utils_1.getLocationFromText(rawExperience.location) : null, startDate,
                         endDate,
                         endDateIsPresent,
-                        durationInDays, description: utils_1.getCleanText(rawExperience.description) });
+                        durationInDays, description: utils_1.getCleanText(rawExperience.description)
+                    });
                 });
                 utils_1.statusLog(logSection, `Got experiences data: ${JSON.stringify(experiences)}`, scraperSessionId);
                 utils_1.statusLog(logSection, `Parsing education data...`, scraperSessionId);
@@ -565,8 +620,10 @@ class LinkedInProfileScraper {
                 const education = rawEducationData.map(rawEducation => {
                     const startDate = utils_1.formatDate(rawEducation.startDate);
                     const endDate = utils_1.formatDate(rawEducation.endDate);
-                    return Object.assign(Object.assign({}, rawEducation), { schoolName: utils_1.getCleanText(rawEducation.schoolName), degreeName: utils_1.getCleanText(rawEducation.degreeName), fieldOfStudy: utils_1.getCleanText(rawEducation.fieldOfStudy), startDate,
-                        endDate, durationInDays: utils_1.getDurationInDays(startDate, endDate) });
+                    return Object.assign(Object.assign({}, rawEducation), {
+                        schoolName: utils_1.getCleanText(rawEducation.schoolName), degreeName: utils_1.getCleanText(rawEducation.degreeName), fieldOfStudy: utils_1.getCleanText(rawEducation.fieldOfStudy), startDate,
+                        endDate, durationInDays: utils_1.getDurationInDays(startDate, endDate)
+                    });
                 });
                 utils_1.statusLog(logSection, `Got education data: ${JSON.stringify(education)}`, scraperSessionId);
                 utils_1.statusLog(logSection, `Parsing volunteer experience data...`, scraperSessionId);
@@ -600,8 +657,10 @@ class LinkedInProfileScraper {
                 const volunteerExperiences = rawVolunteerExperiences.map(rawVolunteerExperience => {
                     const startDate = utils_1.formatDate(rawVolunteerExperience.startDate);
                     const endDate = utils_1.formatDate(rawVolunteerExperience.endDate);
-                    return Object.assign(Object.assign({}, rawVolunteerExperience), { title: utils_1.getCleanText(rawVolunteerExperience.title), company: utils_1.getCleanText(rawVolunteerExperience.company), description: utils_1.getCleanText(rawVolunteerExperience.description), startDate,
-                        endDate, durationInDays: utils_1.getDurationInDays(startDate, endDate) });
+                    return Object.assign(Object.assign({}, rawVolunteerExperience), {
+                        title: utils_1.getCleanText(rawVolunteerExperience.title), company: utils_1.getCleanText(rawVolunteerExperience.company), description: utils_1.getCleanText(rawVolunteerExperience.description), startDate,
+                        endDate, durationInDays: utils_1.getDurationInDays(startDate, endDate)
+                    });
                 });
                 utils_1.statusLog(logSection, `Got volunteer experience data: ${JSON.stringify(volunteerExperiences)}`, scraperSessionId);
                 utils_1.statusLog(logSection, `Parsing skills data...`, scraperSessionId);
